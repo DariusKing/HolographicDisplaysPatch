@@ -3,7 +3,3 @@ main: com.gmail.filoghost.holograms.patch.HologramsPatch
 version: 1.0
 
 softdepend: [HolographicDisplays, ProtocolLib]
-
-commands:
-   hologramtest:
-      description: Main command for HolographicDisplaysPatch.

@@ -106,6 +106,14 @@ public class WrapperPlayServerSpawnEntityLiving extends AbstractPacket {
     }
     
     /**
+     * Set the type of mob.
+     * @param value - new value.
+    */
+	public void setType(int value) {
+        handle.getIntegers().write(1, value);
+    }
+    
+    /**
      * Retrieve the x position of the object.
      * <p>
      * Note that the coordinate is rounded off to the nearest 1/32 of a meter.
