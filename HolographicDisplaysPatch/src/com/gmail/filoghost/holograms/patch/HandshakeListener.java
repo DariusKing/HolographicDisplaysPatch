@@ -1,9 +1,9 @@
 package com.gmail.filoghost.holograms.patch;
 
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.packetwrapper.WrapperHandshakeClientSetProtocol;
@@ -28,18 +28,18 @@ public class HandshakeListener extends PacketAdapter {
 		WrapperHandshakeClientSetProtocol handshakePacket = new WrapperHandshakeClientSetProtocol(event.getPacket());
 		
 		int protocolVersion = handshakePacket.getProtocolVersion();
-		String serverHostname = event.getPlayer().getAddress().getHostName();
+		String host = HologramsPatch.getIP(event.getPlayer());
 		
-		if (serverHostname.equals("localhost")) {
-			serverHostname = "127.0.0.1";
+		if (host.equals("localhost")) {
+			host = "127.0.0.1";
 		}
 		
 		if (protocolVersion > 5) { // 1.8
-			newProtocolClients.add(serverHostname);
+			newProtocolClients.add(host);
 		}
 	}
 	
-	public boolean hasNewProtocol(InetAddress inetAddress) {
-		return newProtocolClients.contains(inetAddress.getHostAddress());
+	public boolean hasNewProtocol(Player player) {
+		return newProtocolClients.contains(HologramsPatch.getIP(player));
 	}
 }

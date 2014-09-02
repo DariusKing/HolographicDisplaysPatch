@@ -42,7 +42,7 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onLogin(PlayerLoginEvent event) {
-		if (handshakeListener.hasNewProtocol(event.getAddress())) {
+		if (handshakeListener.hasNewProtocol(event.getPlayer())) {
 			newProtocolUUIDs.add(event.getPlayer().getUniqueId());
 		}
 	}
@@ -50,6 +50,10 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		newProtocolUUIDs.remove(event.getPlayer().getUniqueId());
+	}
+	
+	public static String getIP(Player player) {
+		return player.getAddress().getAddress().getHostAddress();
 	}
 	
 	public static boolean hasNewProtocol(Player player) {
