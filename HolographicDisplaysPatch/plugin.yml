@@ -1,4 +1,4 @@
-name: HolographicDisplaysPath
+name: HolographicDisplaysPatch
 main: com.gmail.filoghost.holograms.patch.HologramsPatch
 version: 1.0
 
