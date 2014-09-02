@@ -70,7 +70,7 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 		
 		WrapperPlayServerSpawnEntity spawnEntityPacket = new WrapperPlayServerSpawnEntity();
 		spawnEntityPacket.setEntityID(id);
-		spawnEntityPacket.setEntityID(WrapperPlayServerSpawnEntity.ObjectTypes.BOAT);
+		spawnEntityPacket.setType(WrapperPlayServerSpawnEntity.ObjectTypes.BOAT);
 		spawnEntityPacket.setX(player.getLocation().getX());
 		spawnEntityPacket.setY(player.getLocation().getY() + 2.0);
 		spawnEntityPacket.setZ(player.getLocation().getZ());
