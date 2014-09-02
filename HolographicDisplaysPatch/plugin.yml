@@ -1,5 +1,5 @@
 name: HolographicDisplaysPatch
 main: com.gmail.filoghost.holograms.patch.HologramsPatch
-version: 1.0.1
+version: 1.0.2
 
 softdepend: [HolographicDisplays, ProtocolLib]
