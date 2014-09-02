@@ -28,7 +28,7 @@ public class HandshakeListener extends PacketAdapter {
 		WrapperHandshakeClientSetProtocol handshakePacket = new WrapperHandshakeClientSetProtocol(event.getPacket());
 		
 		int protocolVersion = handshakePacket.getProtocolVersion();
-		String serverHostname = handshakePacket.getServerHostname();
+		String serverHostname = event.getPlayer().getAddress().getHostName();
 		
 		if (serverHostname.equals("localhost")) {
 			serverHostname = "127.0.0.1";
