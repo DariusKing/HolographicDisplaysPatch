@@ -1,5 +1,6 @@
 package com.gmail.filoghost.holograms.patch;
 
+import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import com.comphenix.protocol.events.PacketEvent;
 
 public class HandshakeListener extends PacketAdapter {
 	
-	private static Set<String> newProtocolIPs;
+	static Set<String> newProtocolIPs;
 	
 	public HandshakeListener(Plugin plugin) {
 		super(plugin, ListenerPriority.MONITOR, PacketType.Handshake.Client.SET_PROTOCOL);
@@ -29,6 +30,8 @@ public class HandshakeListener extends PacketAdapter {
 		
 		if (protocolVersion > 5) { // 1.8
 			newProtocolIPs.add(getIP(event.getPlayer()));
+		} else {
+			newProtocolIPs.remove(getIP(event.getPlayer()));
 		}
 	}
 	
@@ -42,5 +45,9 @@ public class HandshakeListener extends PacketAdapter {
 	
 	public void clear(Player player) {
 		newProtocolIPs.remove(player);
+	}
+
+	public boolean hasNewProtocol(InetAddress address) {
+		return newProtocolIPs.contains(address.getHostAddress());
 	}
 }

@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,8 +41,8 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent event) {
-		if (handshakeListener.hasNewProtocol(event.getPlayer())) {
+	public void onLogin(PlayerLoginEvent event) {
+		if (handshakeListener.hasNewProtocol(event.getAddress())) {
 			newProtocolPlayers.add(event.getPlayer());
 		}
 	}
