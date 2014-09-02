@@ -2,21 +2,21 @@ package com.gmail.filoghost.holograms.patch;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.comphenix.protocol.ProtocolLibrary;
 
 public class HologramsPatch extends JavaPlugin implements Listener {
 
 	private HandshakeListener handshakeListener;
-	private static Set<UUID> newProtocolUUIDs;
+	private static Set<Player> newProtocolPlayers;
 
 	@Override
 	public void onEnable() {
@@ -32,7 +32,7 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 			return;
 		}
 		
-		newProtocolUUIDs = new HashSet<UUID>();
+		newProtocolPlayers = new HashSet<Player>();
 		handshakeListener = new HandshakeListener(this);
 		ProtocolLibrary.getProtocolManager().addPacketListener(handshakeListener);
 		ProtocolLibrary.getProtocolManager().addPacketListener(new HologramsPacketListener(this));
@@ -41,22 +41,20 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	public void onLogin(PlayerLoginEvent event) {
+	public void onJoin(PlayerJoinEvent event) {
 		if (handshakeListener.hasNewProtocol(event.getPlayer())) {
-			newProtocolUUIDs.add(event.getPlayer().getUniqueId());
+			newProtocolPlayers.add(event.getPlayer());
 		}
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
-		newProtocolUUIDs.remove(event.getPlayer().getUniqueId());
+		newProtocolPlayers.remove(event.getPlayer());
+		handshakeListener.clear(event.getPlayer());
 	}
-	
-	public static String getIP(Player player) {
-		return player.getAddress().getAddress().getHostAddress();
-	}
+
 	
 	public static boolean hasNewProtocol(Player player) {
-		return newProtocolUUIDs.contains(player.getUniqueId());
+		return newProtocolPlayers.contains(player);
 	}	
 }

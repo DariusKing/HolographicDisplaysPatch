@@ -13,33 +13,34 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
 public class HandshakeListener extends PacketAdapter {
-
-	// Clients connecting with 1.8
-	private Set<String> newProtocolClients;
+	
+	private static Set<String> newProtocolIPs;
 	
 	public HandshakeListener(Plugin plugin) {
 		super(plugin, ListenerPriority.MONITOR, PacketType.Handshake.Client.SET_PROTOCOL);
-		newProtocolClients = new HashSet<String>();
+		newProtocolIPs = new HashSet<String>();
 	}
 
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
 		
 		WrapperHandshakeClientSetProtocol handshakePacket = new WrapperHandshakeClientSetProtocol(event.getPacket());
-		
 		int protocolVersion = handshakePacket.getProtocolVersion();
-		String host = HologramsPatch.getIP(event.getPlayer());
-		
-		if (host.equals("localhost")) {
-			host = "127.0.0.1";
-		}
 		
 		if (protocolVersion > 5) { // 1.8
-			newProtocolClients.add(host);
+			newProtocolIPs.add(getIP(event.getPlayer()));
 		}
 	}
 	
+	private String getIP(Player player) {
+		return player.getAddress().getAddress().getHostAddress();
+	}
+	
 	public boolean hasNewProtocol(Player player) {
-		return newProtocolClients.contains(HologramsPatch.getIP(player));
+		return newProtocolIPs.contains(getIP(player));
+	}
+	
+	public void clear(Player player) {
+		newProtocolIPs.remove(player);
 	}
 }
