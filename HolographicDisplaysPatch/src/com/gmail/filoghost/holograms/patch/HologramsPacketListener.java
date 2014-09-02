@@ -1,8 +1,5 @@
 package com.gmail.filoghost.holograms.patch;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
@@ -14,7 +11,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.gmail.filoghost.holograms.api.HolographicDisplaysAPI;
 
 public class HologramsPacketListener extends PacketAdapter {
@@ -42,8 +38,13 @@ public class HologramsPacketListener extends PacketAdapter {
 		
 		if (event.getPacketType() == PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
 			WrapperPlayServerSpawnEntityLiving spawnLivingPacket = new WrapperPlayServerSpawnEntityLiving(event.getPacket());
+			Entity entity = spawnLivingPacket.getEntity(event);
 			
-			if (spawnLivingPacket.getType() == EntityType.HORSE && HolographicDisplaysAPI.isHologramEntity(spawnLivingPacket.getEntity(event))) {
+			if (entity == null) {
+				return;
+			}
+			
+			if (spawnLivingPacket.getType() == EntityType.HORSE && HolographicDisplaysAPI.isHologramEntity(entity)) {
 				// They do not see horses
 				event.setCancelled(true);
 			}
@@ -54,9 +55,14 @@ public class HologramsPacketListener extends PacketAdapter {
 			if (spawnEntityPacket.getType() == WrapperPlayServerSpawnEntity.ObjectTypes.WITHER_SKULL) {
 				
 				Entity witherSkull = spawnEntityPacket.getEntity(event);
+				
+				if (witherSkull == null) {
+					return;
+				}
+				
 				if (HolographicDisplaysAPI.isHologramEntity(witherSkull)) {
 					spawnEntityPacket.setY(spawnEntityPacket.getY() - VERTICAL_OFFSET);
-					spawnEntityPacket.setType(WrapperPlayServerSpawnEntity.ObjectTypes.MINECART); // Just to see them TODO
+					spawnEntityPacket.setType(WrapperPlayServerSpawnEntity.ObjectTypes.BOAT); // Just to see them TODO
 				}
 			}
 			
@@ -65,13 +71,27 @@ public class HologramsPacketListener extends PacketAdapter {
 			WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata(event.getPacket());
 			Entity entity = metadataPacket.getEntity(event);
 			
+			if (entity == null) {
+				return;
+			}
+			
 			if (HolographicDisplaysAPI.isHologramEntity(entity)) {
 				
 				if (entity.getType() == EntityType.HORSE) {
 					// The horse metadata is applied to the wither skull instead
 	
 					Entity witherSkull = entity.getVehicle();
+					if (witherSkull == null) {
+						return;
+					}
 					
+					event.setCancelled(true);
+					
+					HologramsPatch.sendCustomNamePacket(event.getPlayer(), witherSkull.getEntityId());
+					System.out.println("Sent new metadata");
+					
+					/*
+
 					metadataPacket.setEntityId(witherSkull.getEntityId());
 					
 					List<WrappedWatchableObject> metadata = metadataPacket.getEntityMetadata();
@@ -86,7 +106,8 @@ public class HologramsPacketListener extends PacketAdapter {
 					}
 					
 					metadataPacket.setEntityMetadata(metadata);
-					System.out.println("Sent new metadata: " + metadata.toString());
+					System.out.println("Sent new metadata");
+					*/
 				
 				} else if (entity.getType() == EntityType.WITHER_SKULL) {
 					// The skull metadata packet is cancelled, because we use the metadata of the horse

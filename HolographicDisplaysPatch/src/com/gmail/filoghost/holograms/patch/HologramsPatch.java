@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.packetwrapper.WrapperPlayServerEntityMetadata;
-import com.comphenix.packetwrapper.WrapperPlayServerSpawnEntity;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
@@ -66,27 +66,23 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		Player player = (Player) sender;
-		int id = 500000;
 		
-		WrapperPlayServerSpawnEntity spawnEntityPacket = new WrapperPlayServerSpawnEntity();
-		spawnEntityPacket.setEntityID(id);
-		spawnEntityPacket.setType(WrapperPlayServerSpawnEntity.ObjectTypes.BOAT);
-		spawnEntityPacket.setX(player.getLocation().getX());
-		spawnEntityPacket.setY(player.getLocation().getY() + 2.0);
-		spawnEntityPacket.setZ(player.getLocation().getZ());
+		Boat boat = player.getWorld().spawn(player.getLocation(), Boat.class);
+		sendCustomNamePacket(player, boat.getEntityId());
 		
+		player.sendMessage("Spawned");
+		return true;
+	}
+	
+	public static void sendCustomNamePacket(Player player, int entityID) {
 		WrapperPlayServerEntityMetadata metadataPacket = new WrapperPlayServerEntityMetadata();
-		metadataPacket.setEntityId(id);
+		metadataPacket.setEntityId(entityID);
 		metadataPacket.setEntityMetadata(Arrays.asList(
-			new WrappedWatchableObject(2, "CUSTOM NAME"),
+			new WrappedWatchableObject(2, "CUSTOM NAME - TEST"),
 			new WrappedWatchableObject(3, Byte.valueOf((byte) 1))	
 		));
 		
-		spawnEntityPacket.sendPacket(player);
 		metadataPacket.sendPacket(player);
-		
-		player.sendMessage("spawned");
-		return true;
 	}
 	
 	
