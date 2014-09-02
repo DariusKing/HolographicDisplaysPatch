@@ -1,5 +1,8 @@
 package com.gmail.filoghost.holograms.patch;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
@@ -11,6 +14,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.gmail.filoghost.holograms.api.HolographicDisplaysAPI;
 
 public class HologramsPacketListener extends PacketAdapter {
@@ -84,13 +88,6 @@ public class HologramsPacketListener extends PacketAdapter {
 					if (witherSkull == null) {
 						return;
 					}
-					
-					event.setCancelled(true);
-					
-					HologramsPatch.sendCustomNamePacket(event.getPlayer(), witherSkull.getEntityId());
-					System.out.println("Sent new metadata");
-					
-					/*
 
 					metadataPacket.setEntityId(witherSkull.getEntityId());
 					
@@ -106,8 +103,7 @@ public class HologramsPacketListener extends PacketAdapter {
 					}
 					
 					metadataPacket.setEntityMetadata(metadata);
-					System.out.println("Sent new metadata");
-					*/
+					System.out.println("Changed metadata");
 				
 				} else if (entity.getType() == EntityType.WITHER_SKULL) {
 					// The skull metadata packet is cancelled, because we use the metadata of the horse
