@@ -2,12 +2,15 @@ package com.gmail.filoghost.holograms.patch;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,7 +18,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 
 public class HologramsPatch extends JavaPlugin implements Listener {
 
-	private HandshakeListener handshakeListener;
 	private static Set<Player> newProtocolPlayers;
 
 	@Override
@@ -31,18 +33,32 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 			setEnabled(false);
 			return;
 		}
+
+		Matcher buildMatcher = Pattern.compile("(?i)(git-Spigot-)(\\d+)").matcher(Bukkit.getVersion());
+		if (!buildMatcher.find() || buildMatcher.groupCount() < 2 || !isCorrectBuild(buildMatcher.group(2))) {
+			getLogger().severe("This plugin does only work on Spigot #1628 and higher!");
+			setEnabled(false);
+			return;
+		}
 		
 		newProtocolPlayers = new HashSet<Player>();
-		handshakeListener = new HandshakeListener(this);
-		ProtocolLibrary.getProtocolManager().addPacketListener(handshakeListener);
 		ProtocolLibrary.getProtocolManager().addPacketListener(new HologramsPacketListener(this));
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 	}
 	
+	private boolean isCorrectBuild(String input) {
+		try {
+			return Integer.parseInt(input) >= 1628;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+	
 	@EventHandler
-	public void onLogin(PlayerLoginEvent event) {
-		if (handshakeListener.hasNewProtocol(event.getAddress())) {
+	public void onJoin(PlayerJoinEvent event) {
+		// Higher than 5 = new protocol
+		if (((CraftPlayer) event.getPlayer()).getHandle().playerConnection.networkManager.getVersion() > 5) {
 			newProtocolPlayers.add(event.getPlayer());
 		}
 	}
@@ -50,7 +66,6 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		newProtocolPlayers.remove(event.getPlayer());
-		handshakeListener.clear(event.getPlayer());
 	}
 
 	
