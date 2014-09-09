@@ -36,9 +36,7 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 
 		Matcher buildMatcher = Pattern.compile("(?i)(git-Spigot-)(\\d+)").matcher(Bukkit.getVersion());
 		if (!buildMatcher.find() || buildMatcher.groupCount() < 2 || !isCorrectBuild(buildMatcher.group(2))) {
-			getLogger().severe("This plugin does only work on Spigot #1628 and higher!");
-			setEnabled(false);
-			return;
+			getLogger().warning("This plugin does only work on Spigot #1628 and higher! If you're using the new patched Spigot, ignore this warning.");
 		}
 		
 		newProtocolPlayers = new HashSet<Player>();
