@@ -1,5 +1,6 @@
 package com.gmail.filoghost.holograms.patch;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -19,9 +20,12 @@ import com.comphenix.protocol.ProtocolLibrary;
 public class HologramsPatch extends JavaPlugin implements Listener {
 
 	private static Set<Player> newProtocolPlayers;
+	public static HologramsPatch plugin;
 
 	@Override
 	public void onEnable() {
+		plugin = this;
+		
 		if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
 			getLogger().severe("This plugin requires Holographic Displays to work!");
 			setEnabled(false);
@@ -39,7 +43,7 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 			getLogger().warning("This plugin does only work on Spigot #1628 and higher! If you're using the new patched Spigot, ignore this warning.");
 		}
 		
-		newProtocolPlayers = new HashSet<Player>();
+		newProtocolPlayers = Collections.synchronizedSet(new HashSet<Player>());
 		ProtocolLibrary.getProtocolManager().addPacketListener(new HologramsPacketListener(this));
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
@@ -69,5 +73,5 @@ public class HologramsPatch extends JavaPlugin implements Listener {
 	
 	public static boolean hasNewProtocol(Player player) {
 		return newProtocolPlayers.contains(player);
-	}	
+	}
 }
